@@ -72,12 +72,12 @@ histogram_array, lower_ends, upper_ends = make_histogram_array('test_data.csv', 
 optimal_z = int(np.median(np.where(histogram_array == np.max(histogram_array)))) 
 print('optimal z:', optimal_z * resolution, 'm')
 
-res = minimize(function_to_minimize, x0=[2038000], args=([lower_ends, upper_ends]), method='Powell')
-print(res)
+# res = minimize(function_to_minimize, x0=[2038000], args=([lower_ends, upper_ends]), method='Powell')
+# print(res)
 
 plt.plot(histogram_array)
 plt.scatter(optimal_z,histogram_array[optimal_z],color='red')
-plt.scatter(optimal_z,0,color='red')
-plt.scatter(res.x[0],0,color='green')
+# plt.scatter(optimal_z,0,color='red')
+# plt.scatter(res.x[0],0,color='green')
 plt.show()
     
