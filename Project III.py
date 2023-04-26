@@ -33,14 +33,8 @@ l_k = 609.5 #measured mean decay length of kaon
 l_pi = 4188 #measured mean decay length of pion
 
 tau = 2.6033*10**(-8) #s
-
-
 mass_kaon = 493.68 #Mev
 mass_pi = 193.57 #Mev
-
-
-
-
 p_pi= mass_pi*l_pi/(c*tau) #three momentum of the pion in the Kaon rest frame
 
 E_pion = np.sqrt(mass_pi**2 + p_pi**2)
@@ -65,8 +59,8 @@ for i in range(100000):
     p_pi_plus_boosted = np.dot(boost,p_pi_plus)
     p_pi_neutral_boosted = np.dot(boost,p_pi_neutral)
 
-    angle_lab_frame_plus = np.tan(p_pi_plus_boosted[2]/p_pi_plus_boosted[3])
-    angle_lab_frame_neutral = np.tan(p_pi_neutral_boosted[2]/p_pi_neutral_boosted[3])
+    angle_lab_frame_plus = abs(np.arctan(p_pi_plus_boosted[2]/p_pi_plus_boosted[3]))
+    angle_lab_frame_neutral = abs(np.arctan(p_pi_neutral_boosted[2]/p_pi_neutral_boosted[3]))
 
 
 

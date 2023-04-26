@@ -70,7 +70,7 @@ z_max = 5000 # the upper bound for the positiion of the 2nd detector in meter
 resolution = 0.001 # m
 histogram_array, lower_ends, upper_ends = make_histogram_array('test_data.csv', resolution, z_max)
 optimal_z = int(np.median(np.where(histogram_array == np.max(histogram_array)))) 
-print('optimal z:', optimal_z * resolution, 'm')
+print('optimal z:', (optimal_z) * resolution, 'm') 
 
 # res = minimize(function_to_minimize, x0=[2038000], args=([lower_ends, upper_ends]), method='Powell')
 # print(res)
