@@ -35,7 +35,7 @@ def function_to_minimize(variables, data):
     return negative_log_of_likelihood_of_data(data, l_k)
 
 # load data -------------------------------------
-data = np.loadtxt('dec_lengths.txt')
+data = np.loadtxt('data/dec_lengths.txt')
 
 # fit -------------------------------------------
 counts, bins, _ = plt.hist(data, bins=500, density=True, label='Data')
@@ -50,9 +50,12 @@ print(f'mean decay lenght Kaon {mean_decay_lenght_Kaon} m')
 
 # get neg log likelihood curve
 Xdata = np.linspace(550,574,8000)
-# Ydata = [negative_log_of_likelihood_of_data(data, l_k) - res.fun - 0.5 for l_k in Xdata] 
-# np.savetxt('neg log likelihood Ydata.txt', Ydata)
-Ydata = np.loadtxt('neg log likelihood Ydata.txt')
+Ydata = np.loadtxt('data/neg log likelihood Ydata.txt')
+
+### This can be used to generate Ydata. But it can become computational expencive with more Xdata ###
+# Ydata = [negative_log_of_likelihood_of_data(data, l_k) - res.fun - 0.5 for l_k in Xdata]          #
+# np.savetxt('data/neg log likelihood Ydata.txt', Ydata)                                            #
+#####################################################################################################
 
 # fit
 fit_func = lambda x, a, b, c: a*x**2 + b*x + c
@@ -74,17 +77,6 @@ mean_decay_lenght_Kaon_uncertainty = uncertainty.n + uncertainty.s
 print('uncertainty: {:L}'.format(uncertainty))
 print('mean decay lenght Kaon uncertainty:', mean_decay_lenght_Kaon_uncertainty)
 
-# plot ------------------------------------------
-counts, bins, _ = plt.hist(data, bins=500, density=True, label='Data')
-xdata = bins[:-1]
-plt.plot(xdata,T(xdata, res.x[0]), label='Fit')
-plt.xlabel('Decay Length [m]')
-plt.ylabel('Number of Particles (normalized)')
-plt.title(r'Particle decay length of mixed $K^+$ and $\pi^+$ beam')
-plt.legend()
-plt.savefig('decay_length_of_mixed_beam.pdf')
-# plt.show()
-
 # mean life time of Kaon ------------------------
 l_k = ufloat(mean_decay_lenght_Kaon,mean_decay_lenght_Kaon_uncertainty) # m
 l_p = ufloat(4188,0) # m
@@ -96,3 +88,12 @@ tau_k = l_k/l_p * tau_p * m_k/m_p
 print(r'measured mean decay lenght $l_{K^+} =', '{:L}$'.format(l_k), 'm')
 print(r'measured mean life time $\tau_{K^+, \, measured} =', '{:L}$'.format(tau_k), 's')
 print(r'literature mean life time $\tau_{K^+,  \, literature} = \left(1.2380 \pm 0.0020\right) \times 10^{-8}$ s')
+
+# plot ------------------------------------------
+plt.plot(xdata,T(xdata, res.x[0]), label='Fit')
+plt.xlabel('Decay Length [m]')
+plt.ylabel('Number of Particles (normalized)')
+plt.title(r'Particle decay length of mixed $K^+$ and $\pi^+$ beam')
+plt.legend()
+plt.savefig('plots/decay_length_of_mixed_beam.pdf')
+plt.show()
