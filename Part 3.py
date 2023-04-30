@@ -125,14 +125,14 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
         p_pi_plus = np.array([
             E_pi, 
             0, 
-            p_pi*np.sin(angle_data[i]), 
-            p_pi*np.cos(angle_data[i])
+            p_pi*np.cos(angle_data[i]), 
+            p_pi*np.sin(angle_data[i])
         ])
         p_pi_zero = np.array([
             E_pi, 
             0, 
-            -p_pi*np.sin(angle_data[i]), 
-            -p_pi*np.cos(angle_data[i])
+            -p_pi*np.cos(angle_data[i]), 
+            -p_pi*np.sin(angle_data[i])
         ])
 
         p_pi_plus_boosted = boost.dot(p_pi_plus)
@@ -164,19 +164,27 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     optimal_z_histogram = optimal_z * resolution
     print('optimal detector position:', optimal_z_histogram, 'm') 
 
+    t2 = time.time()
+    print_time_needed(t2 - t1)
+
     # accept reject method
     if use_accept_reject:
+        t1 = time.time()
+        print('optimizing detector posititon with accept reject method ...')
+        
         data_df = pd.read_csv('data/simulation_data.csv')
-        z_pos = np.linspace(150, 350, 600)
+        z_pos = np.linspace(150, 350, 400)
         scores = [accept_reject(data_df, z) for z in z_pos]
         optimal_z_idx = int(np.median(np.where(scores == np.max(scores))))
         optimal_z_accept_reject = np.round(z_pos[optimal_z_idx],2)
         print('optimal detector position:', optimal_z_accept_reject, 'm')
 
-    t2 = time.time()
-    print_time_needed(t2 - t1)
+        t2 = time.time()
+        print_time_needed(t2 - t1)
 
-    print('--------------------------------')
+        print('-----------------------------------------------------------')
+    else:
+        print('--------------------------------')
 
     # plot ------------------------------------------
     if generate_plot:
@@ -203,11 +211,11 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     
     return optimal_z_histogram
 
-# part_3(N_simulations=1000, use_accept_reject=False)
+# part_3(N_simulations=1000, use_accept_reject=True)
 
 N_experiments = 50
 T1 = time.time()
-optimal_pos = np.array([part_3(N_simulations=100000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
+optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
 T2 = time.time()
 np.savetxt('data/optimal_pos.txt', optimal_pos)
 optimal_pos_mean = np.mean(optimal_pos)
