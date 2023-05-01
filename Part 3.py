@@ -4,6 +4,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from uncertainties import ufloat
 
+import os 
+try:
+    os.chdir('Datenanalysis_II_project')
+except :
+    pass
+
 def print_time_needed(time_needed):
     if time_needed >= 60:
         time_needed /= 60
@@ -67,37 +73,54 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
 
     # set up ----------------------------------------
     c = 299792458 # m/s
+    
     l_k = 562 # m, measured mean decay length of Kaon
     l_pi = 4188 # m, mean decay length of Pion
+    
     tau_k = 1.2380e-8 # s
-    tau_pi = 2.6033e-8 # s
-    # mass_kaon = 8.800595717468e-28 # kg # 493.677 # Mev
-    # mass_pi = 2.488069277117e-28 # kg # 139.57039 # Mev
-    mass_kaon = 493.677 # Mev
-    mass_pi = 139.57039 # Mev
 
-    # p_pi = mass_pi*l_pi/(c*tau_pi) # three momentum of the pion in the Kaon rest frame
-    # E_pi = np.sqrt(mass_pi**2 + p_pi**2)
-    # gamma = E_pi/mass_pi
-    # beta = p_pi/E_pi
+    # tau_pi_plus = 2.6033e-8 # s
+    # tau_pi_zero = 8.43e-17 # s
+    
+    # m_pi_plus = 139.57039 # Mev
+    # m_pi_zero = 134.9768  # Mev
+
+    tau_pi = 2.6033e-8 # s    
+    m_pi = 139.57039 # Mev
 
     # -----------------------------------------------
-    mean_decay_length = l_k
-    kaon_lifetime = tau_k
-    pion_lifetime = tau_pi
-
     velocity = lambda l, tau: l/(np.sqrt((tau**2) + ((l**2)/c**2)))
+    momentum = lambda l, m, tau: (m*l)/(c*tau)
+    energy = lambda m, p: np.sqrt(m**2 + p**2)
+    beta = lambda p, E: p/E
+    gamma = lambda E, m: E/m
 
+    # K+
     v_k = velocity(l_k, tau_k)
-    v_pi = velocity(l_pi, tau_pi)
     b_k = v_k/c
     g_k = 1/np.sqrt(1-(b_k**2))
 
-    pi_B = v_pi/c
-    pi_G = 1/np.sqrt(1-(pi_B**2))
+    # # pi+
+    # v_pi_plus = velocity(l_pi, tau_pi_plus)
+    # b_pi_plus = v_pi_plus/c
+    # g_pi_plus = 1/np.sqrt(1-(b_pi_plus**2))
+    # p_pi_plus = g_pi_plus * m_pi_plus * v_pi_plus
+    # E_pi_plus = np.sqrt(m_pi_plus**2 + p_pi_plus**2)
 
-    p_pi = pi_G* mass_pi * v_pi
-    E_pi = np.sqrt(mass_pi**2 + p_pi**2)
+    # # pi0
+    # v_pi_zero = velocity(l_pi, tau_pi_zero)
+    # b_pi_zero = v_pi_zero/c
+    # g_pi_zero = 1/np.sqrt(1-(b_pi_zero**2))
+    # p_pi_zero = g_pi_zero * m_pi_zero * v_pi_zero
+    # E_pi_zero = np.sqrt(m_pi_plus**2 + p_pi_plus**2)
+
+    # pi
+    v_pi = velocity(l_pi, tau_pi)
+    b_pi = v_pi/c
+    g_pi = 1/np.sqrt(1-(b_pi**2))
+    p_pi = g_pi * m_pi * v_pi_
+    E_pi = np.sqrt(m_pi**2 + p_pi**2)
+
 
     # -----------------------------------------------
 
@@ -122,21 +145,34 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
         angle_data[i] = np.random.uniform(0, 2*np.pi)
         pos_data[i] = np.random.exponential(scale=l_k)
 
-        p_pi_plus = np.array([
+        # p_pi_plus_vec = np.array([
+        #     E_pi_plus, 
+        #     0, 
+        #     p_pi_plus*np.sin(angle_data[i]), 
+        #     p_pi_plus*np.cos(angle_data[i])
+        # ])
+        # p_pi_zero_vec = np.array([
+        #     E_pi_zero, 
+        #     0, 
+        #     -p_pi_zero*np.sin(angle_data[i]), 
+        #     -p_pi_zero*np.cos(angle_data[i])
+        # ])
+
+        p_pi_plus_vec = np.array([
             E_pi, 
             0, 
-            p_pi*np.cos(angle_data[i]), 
-            p_pi*np.sin(angle_data[i])
+            p_pi*np.sin(angle_data[i]), 
+            p_pi*np.cos(angle_data[i])
         ])
-        p_pi_zero = np.array([
+        p_pi_zero_vec = np.array([
             E_pi, 
             0, 
-            -p_pi*np.cos(angle_data[i]), 
-            -p_pi*np.sin(angle_data[i])
+            -p_pi*np.sin(angle_data[i]), 
+            -p_pi*np.cos(angle_data[i])
         ])
 
-        p_pi_plus_boosted = boost.dot(p_pi_plus)
-        p_pi_zero_boosted = boost.dot(p_pi_zero)
+        p_pi_plus_boosted = boost.dot(p_pi_plus_vec)
+        p_pi_zero_boosted = boost.dot(p_pi_zero_vec)
 
         # store data
         angle_lab_frame_plus[i] = abs(np.arctan(p_pi_plus_boosted[2]/p_pi_plus_boosted[3]))
@@ -211,14 +247,14 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     
     return optimal_z_histogram
 
-# part_3(N_simulations=1000, use_accept_reject=True)
+part_3(N_simulations=1000, use_accept_reject=False)
 
-N_experiments = 50
-T1 = time.time()
-optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
-T2 = time.time()
-np.savetxt('data/optimal_pos.txt', optimal_pos)
-optimal_pos_mean = np.mean(optimal_pos)
-optimal_pos_uncertainty = np.std(optimal_pos) / np.sqrt(len(optimal_pos))
-print('optimal detector position: ${:L}$ m'.format(ufloat(optimal_pos_mean, optimal_pos_uncertainty)))
-print_time_needed(T2 - T1)
+# N_experiments = 50
+# T1 = time.time()
+# optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
+# T2 = time.time()
+# np.savetxt('data/optimal_pos.txt', optimal_pos)
+# optimal_pos_mean = np.mean(optimal_pos)
+# optimal_pos_uncertainty = np.std(optimal_pos) / np.sqrt(len(optimal_pos))
+# print('optimal detector position: ${:L}$ m'.format(ufloat(optimal_pos_mean, optimal_pos_uncertainty)))
+# print_time_needed(T2 - T1)
