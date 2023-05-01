@@ -79,12 +79,6 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     
     tau_k = 1.2380e-8 # s
 
-    # tau_pi_plus = 2.6033e-8 # s
-    # tau_pi_zero = 8.43e-17 # s
-    
-    # m_pi_plus = 139.57039 # Mev
-    # m_pi_zero = 134.9768  # Mev
-
     tau_pi = 2.6033e-8 # s    
     m_pi = 139.57039 # Mev
 
@@ -96,39 +90,24 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     gamma = lambda E, m: E/m
 
     # K+
-    v_k = velocity(l_k, tau_k)
-    b_k = v_k/c
-    g_k = 1/np.sqrt(1-(b_k**2))
-
-    # # pi+
-    # v_pi_plus = velocity(l_pi, tau_pi_plus)
-    # b_pi_plus = v_pi_plus/c
-    # g_pi_plus = 1/np.sqrt(1-(b_pi_plus**2))
-    # p_pi_plus = g_pi_plus * m_pi_plus * v_pi_plus
-    # E_pi_plus = np.sqrt(m_pi_plus**2 + p_pi_plus**2)
-
-    # # pi0
-    # v_pi_zero = velocity(l_pi, tau_pi_zero)
-    # b_pi_zero = v_pi_zero/c
-    # g_pi_zero = 1/np.sqrt(1-(b_pi_zero**2))
-    # p_pi_zero = g_pi_zero * m_pi_zero * v_pi_zero
-    # E_pi_zero = np.sqrt(m_pi_plus**2 + p_pi_plus**2)
+    velocity_k = velocity(l_k, tau_k)
+    beta_k = velocity_k/c
+    gamma_k = 1/np.sqrt(1-(beta_k**2))
 
     # pi
-    v_pi = velocity(l_pi, tau_pi)
-    b_pi = v_pi/c
-    g_pi = 1/np.sqrt(1-(b_pi**2))
-    p_pi = g_pi * m_pi * v_pi_
+    velocity_pi = velocity(l_pi, tau_pi)
+    beta_pi = velocity_pi/c
+    gamma_pi = 1/np.sqrt(1-(beta_pi**2))
+    p_pi = gamma_pi * m_pi * velocity_pi
     E_pi = np.sqrt(m_pi**2 + p_pi**2)
 
-
     # -----------------------------------------------
-
+    
     boost = np.array([
-        [    g_k,   0,   0, g_k*b_k], 
-        [      0,   1,   0,       0], 
-        [      0,   0,   1,       0], 
-        [g_k*b_k,   0,   0,     g_k]
+        [       gamma_k,   0,   0, gamma_k*beta_k], 
+        [             0,   1,   0,              0], 
+        [             0,   0,   1,              0], 
+        [gamma_k*beta_k,   0,   0,        gamma_k]
     ])
 
     # run simulation --------------------------------
@@ -144,19 +123,6 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     for i in range(N_simulations):
         angle_data[i] = np.random.uniform(0, 2*np.pi)
         pos_data[i] = np.random.exponential(scale=l_k)
-
-        # p_pi_plus_vec = np.array([
-        #     E_pi_plus, 
-        #     0, 
-        #     p_pi_plus*np.sin(angle_data[i]), 
-        #     p_pi_plus*np.cos(angle_data[i])
-        # ])
-        # p_pi_zero_vec = np.array([
-        #     E_pi_zero, 
-        #     0, 
-        #     -p_pi_zero*np.sin(angle_data[i]), 
-        #     -p_pi_zero*np.cos(angle_data[i])
-        # ])
 
         p_pi_plus_vec = np.array([
             E_pi, 
@@ -247,7 +213,7 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     
     return optimal_z_histogram
 
-part_3(N_simulations=1000, use_accept_reject=False)
+part_3(N_simulations=500000, use_accept_reject=False)
 
 # N_experiments = 50
 # T1 = time.time()

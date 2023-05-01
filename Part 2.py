@@ -6,6 +6,13 @@ from scipy.optimize import minimize
 from uncertainties import ufloat
 from uncertainties import unumpy as unp
 
+import os 
+try:
+    os.chdir('Datenanalysis_II_project')
+except :
+    pass
+
+
 # Functions -------------------------------------
 def T(x, l_k):
     def P(x, l_p):
