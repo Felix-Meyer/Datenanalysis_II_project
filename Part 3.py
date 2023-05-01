@@ -213,14 +213,14 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     
     return optimal_z_histogram
 
-part_3(N_simulations=500000, use_accept_reject=False)
+# part_3(N_simulations=500000, use_accept_reject=False)
 
-# N_experiments = 50
-# T1 = time.time()
-# optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
-# T2 = time.time()
-# np.savetxt('data/optimal_pos.txt', optimal_pos)
-# optimal_pos_mean = np.mean(optimal_pos)
-# optimal_pos_uncertainty = np.std(optimal_pos) / np.sqrt(len(optimal_pos))
-# print('optimal detector position: ${:L}$ m'.format(ufloat(optimal_pos_mean, optimal_pos_uncertainty)))
-# print_time_needed(T2 - T1)
+N_experiments = 50
+T1 = time.time()
+optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
+T2 = time.time()
+np.savetxt('data/optimal_pos.txt', optimal_pos)
+optimal_pos_mean = np.mean(optimal_pos)
+optimal_pos_uncertainty = np.std(optimal_pos) / np.sqrt(len(optimal_pos))
+print('optimal detector position: ${:L}$ m'.format(ufloat(optimal_pos_mean, optimal_pos_uncertainty)))
+print_time_needed(T2 - T1)

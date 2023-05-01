@@ -1,6 +1,7 @@
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+from uncertainties import ufloat
 from constants import kaon_lifetime, pion_lifetime, pion_plus_mass, pion_zero_mass, speed_of_light
 
 import os 
@@ -164,11 +165,11 @@ def part_4(num_events, generate_plot=True):
 
     return max_position
 
-part_4(num_events=100000, generate_plot=True)
+# part_4(num_events=100000, generate_plot=True)
 
 N_experiments = 50
 T1 = time.time()
-optimal_pos = np.array([part_3(N_simulations=500000, use_accept_reject=False, generate_plot=False) for _ in range(N_experiments)])
+optimal_pos = np.array([part_4(num_events=500000, generate_plot=False) for _ in range(N_experiments)])
 T2 = time.time()
 np.savetxt('data/optimal_pos_divergent_kaons.txt', optimal_pos)
 optimal_pos_mean = np.mean(optimal_pos)
