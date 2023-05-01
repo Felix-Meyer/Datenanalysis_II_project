@@ -121,7 +121,6 @@ def part_3(N_simulations, use_accept_reject=True, generate_plot=True):
     p_pi = g_pi * m_pi * v_pi_
     E_pi = np.sqrt(m_pi**2 + p_pi**2)
 
-
     # -----------------------------------------------
 
     boost = np.array([
