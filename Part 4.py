@@ -28,7 +28,7 @@ def part_4(num_events, generate_plot=True):
     # Generate decay positions, angles, and scattering angles
     kaon_decay_positions = np.random.exponential(scale=mean_decay_length_kaon, size=num_events)
     pion_decay_angles = np.random.uniform(low=0, high=2 * np.pi, size=num_events)
-    kaon_scattering_angles = np.random.normal(0, 1 / 1000, num_events)
+    kaon_scattering_angles = np.zeros(num_events) # np.random.normal(0, 1 / 1000, num_events)
 
 
     def calc_velocity(distance, time):
@@ -36,7 +36,6 @@ def part_4(num_events, generate_plot=True):
         velocity_squared = distance ** 2 / (time_squared + distance ** 2 / speed_of_light ** 2)
         velocity = np.sqrt(np.where(time_squared == 0, 0, velocity_squared))
         return velocity
-
 
     # Calculate kaon and pion velocities and gammas
     kaon_velocity = calc_velocity(mean_decay_length_kaon, kaon_lifetime)
@@ -115,24 +114,22 @@ def part_4(num_events, generate_plot=True):
             momentum_pion_plus_y = boosted_pion_plus_four_vectors[i][2]
             velocity_pion_plus_y = momentum_pion_plus_y / pion_plus_mass
 
-            decay_time_pion_plus = np.abs(detector_positions - kaon_decay_positions[i]) / velocity_pion_plus_z
-            distance_pion_plus_y = velocity_pion_plus_y * decay_time_pion_plus
+            flight_time_pion_plus = np.abs(detector_positions - kaon_decay_positions[i]) / velocity_pion_plus_z
+            distance_pion_plus_y = velocity_pion_plus_y * flight_time_pion_plus
 
-            mask_plus = np.abs(distance_pion_plus_y) < 2
+            mask_plus = np.abs(distance_pion_plus_y) <= 2
 
-            if np.any(mask_plus):
-                momentum_pion_zero = pion_zero_mass
-            
+            if np.any(mask_plus):            
                 pz_pion_zero = boosted_pion_zero_four_vectors[i][3]
-                velocity_pion_zero_z = pz_pion_zero / momentum_pion_zero
+                velocity_pion_zero_z = pz_pion_zero / pion_zero_mass
             
                 py_pion_zero = boosted_pion_zero_four_vectors[i][2]
-                velocity_pion_zero_y = py_pion_zero / momentum_pion_zero
+                velocity_pion_zero_y = py_pion_zero / pion_zero_mass
                 
-                decay_time_pion_zero = np.abs(detector_positions - kaon_decay_positions[i]) / velocity_pion_zero_z
-                distance_pion_zero_y = velocity_pion_zero_y * decay_time_pion_zero
+                flight_time_pion_zero = np.abs(detector_positions - kaon_decay_positions[i]) / velocity_pion_zero_z
+                distance_pion_zero_y = velocity_pion_zero_y * flight_time_pion_zero
 
-                mask_zero = np.abs(distance_pion_zero_y) < 2
+                mask_zero = np.abs(distance_pion_zero_y) <= 2
 
                 detections[mask_plus & mask_zero] += 1
 
@@ -149,6 +146,11 @@ def part_4(num_events, generate_plot=True):
     t2 = time.time()
     print_time_needed(t2 - t1)
 
+    print(f"Maximum detection count: {max_count}")
+    print(f"Detector position with maximum count: {max_position}")
+    
+    print('--------------------------------')
+    
     if generate_plot:
         fig, ax = plt.subplots()
         ax.plot(detector_positions, detection_counts, 'o', markersize=1, color='blue')
@@ -158,18 +160,13 @@ def part_4(num_events, generate_plot=True):
         fig.savefig('plots/divergent_kaons.pdf')
         plt.show()
 
-    print(f"Maximum detection count: {max_count}")
-    print(f"Detector position with maximum count: {max_position}")
-    
-    print('--------------------------------')
-
     return max_position
 
 # part_4(num_events=100000, generate_plot=True)
 
-N_experiments = 50
+N_experiments = 20
 T1 = time.time()
-optimal_pos = np.array([part_4(num_events=500000, generate_plot=False) for _ in range(N_experiments)])
+optimal_pos = np.array([part_4(num_events=10000, generate_plot=False) for _ in range(N_experiments)])
 T2 = time.time()
 np.savetxt('data/optimal_pos_divergent_kaons.txt', optimal_pos)
 optimal_pos_mean = np.mean(optimal_pos)
